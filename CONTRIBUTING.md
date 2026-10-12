@@ -25,6 +25,16 @@ Thanks for your interest in contributing to CloudCLI UI! Before you start, pleas
    ```bash
    npm install
    ```
+   npm 12 and later only run dependency install scripts listed under `allowScripts` in `package.json`.
+   If the server fails at startup with `Could not locate the bindings file` (better-sqlite3) or a native
+   module such as `node-pty` or `bcrypt` is missing, list the blocked packages, approve the one you need
+   and rebuild it:
+   ```bash
+   npm install-scripts ls
+   npm install-scripts approve better-sqlite3
+   npm rebuild better-sqlite3
+   ```
+   Approvals are pinned to exact versions, so a dependency bump needs a new approval.
 4. Start the development server:
    ```bash
    npm run dev
@@ -38,29 +48,31 @@ Thanks for your interest in contributing to CloudCLI UI! Before you start, pleas
 
 ```
 claudecodeui/
-├── src/              # React frontend (Vite + Tailwind)
-│   ├── components/   # UI components
-│   ├── contexts/     # React context providers
-│   ├── hooks/        # Custom React hooks
-│   ├── i18n/         # Internationalization and translations
-│   ├── lib/          # Shared frontend libraries
-│   ├── types/        # TypeScript type definitions
-│   └── utils/        # Frontend utilities
-├── server/           # Express backend
-│   ├── routes/       # API route handlers
-│   ├── middleware/    # Express middleware
-│   ├── database/     # SQLite database layer
-│   └── tools/        # CLI tool integrations
-├── shared/           # Code shared between client and server
-└── public/           # Static assets, icons, PWA manifest
+├── src/                  # React frontend (Vite + Tailwind)
+│   ├── modules/<feature>/  # One folder per feature, public API in index.ts
+│   └── shared/           # Cross-module UI, hooks, contexts, types, utils, API client (api.ts)
+├── server/               # Express + WebSocket backend (TypeScript)
+│   ├── modules/<feature>/  # One folder per feature: routes, services, tests, index.ts barrel
+│   └── shared/           # Cross-module types, interfaces, utils
+├── shared/               # Code shared between client and server
+├── docs/architecture/    # Chat runtime design notes
+├── plugins/starter/      # Plugin starter (git submodule)
+├── electron/             # Desktop companion app
+└── public/               # Static assets, icons, PWA manifest
 ```
+
+Module rules for `server/` and `src/` are described in `.agents/skills/backend-module-standards/SKILL.md`
+and `.agents/skills/frontend-module-standards/SKILL.md`.
 
 ## Development Workflow
 
 - `npm run dev` — Start both the frontend and backend in development mode
-- `npm run build` — Create a production build
-- `npm run server` — Start only the backend server
+- `npm run server:dev` — Start only the backend from source (`server:dev-watch` reloads on changes)
 - `npm run client` — Start only the Vite dev server
+- `npm run build` — Create a production build
+- `npm run server` — Start only the backend from the production build
+- `npm test` / `npm run test:client` — Backend / frontend tests
+- `npm run typecheck` and `npm run lint` — Type checking and linting
 
 ## Making Changes
 
