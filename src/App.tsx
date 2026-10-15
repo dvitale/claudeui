@@ -8,6 +8,7 @@ import { TaskMasterProvider,TasksSettingsProvider } from '@/modules/task-master'
 import { WebSocketProvider } from '@/shared/context/WebSocketContext';
 import { PluginsProvider } from '@/modules/plugins';
 import { ProjectWorkspaceRoute } from '@/modules/project-workspace';
+import { RemoteNodesShell } from '@/modules/remote-nodes';
 import { i18n } from '@/modules/i18n';
 
 const DEPLOYMENT_ASSET_DIRECTORIES = new Set(['assets', 'static', 'icons', 'images']);
@@ -119,12 +120,14 @@ export default function App() {
               <TasksSettingsProvider>
                 <TaskMasterProvider>
                 <ProtectedRoute>
-                  <Router basename={routerBasename}>
-                    <Routes>
-                      <Route path="/" element={<ProjectWorkspaceRoute />} />
-                      <Route path="/session/:sessionId" element={<ProjectWorkspaceRoute />} />
-                    </Routes>
-                  </Router>
+                  <RemoteNodesShell>
+                    <Router basename={routerBasename}>
+                      <Routes>
+                        <Route path="/" element={<ProjectWorkspaceRoute />} />
+                        <Route path="/session/:sessionId" element={<ProjectWorkspaceRoute />} />
+                      </Routes>
+                    </Router>
+                  </RemoteNodesShell>
                 </ProtectedRoute>
                 </TaskMasterProvider>
               </TasksSettingsProvider>

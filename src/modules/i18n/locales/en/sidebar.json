@@ -75,7 +75,8 @@
     "save": "Save",
     "delete": "Delete",
     "rename": "Rename",
-    "starOnGithub": "Star on GitHub"
+    "starOnGithub": "Star on GitHub",
+    "connectRemoteNode": "Connect to remote node"
   },
   "branding": {
     "openSource": "Open Source"

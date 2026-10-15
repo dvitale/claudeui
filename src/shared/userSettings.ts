@@ -28,6 +28,7 @@ export type UserPreferences = {
   codeEditorSettings: unknown;
   uiPreferences: unknown;
   selectedProvider: string;
+  remoteNodes: unknown;
 };
 
 export type UserPreferenceKey = keyof UserPreferences;
@@ -67,6 +68,8 @@ const LEGACY_STORAGE_KEYS: Record<UserPreferenceKey, string> = {
   codeEditorSettings: '',
   uiPreferences: 'uiPreferences',
   selectedProvider: 'selected-provider',
+  // New preference with no localStorage predecessor; an empty key reads as unset.
+  remoteNodes: '',
 };
 
 const PREFERENCE_KEYS = Object.keys(LEGACY_STORAGE_KEYS) as UserPreferenceKey[];

@@ -394,5 +394,27 @@
     "taskRowNotLoaded": "Launched earlier in this conversation; click to load it",
     "taskOfAgent": "Launched by one of this session's agents"
   },
-  "cancel": "Cancel"
+  "cancel": "Cancel",
+  "remoteNodes": {
+    "tabsLabel": "Nodes",
+    "localTab": "This node",
+    "connectTitle": "Connect to remote node",
+    "dialogTitle": "Connect to remote node",
+    "dialogDescription": "Open another CloudCLI server in a new tab. You sign in to it with that server's own account.",
+    "addressLabel": "Address",
+    "nameLabel": "Name (optional)",
+    "namePlaceholder": "e.g. Build server",
+    "connect": "Connect",
+    "connectAnyway": "Add anyway",
+    "reload": "Reload node",
+    "openInNewWindow": "Open in a new window",
+    "remove": "Remove {{name}}",
+    "confirmRemove": "Remove the node \"{{name}}\" and close its tab?",
+    "errors": {
+      "invalidUrl": "Enter an http(s) address, for example http://192.168.1.10:3001.",
+      "sameNode": "That is the address of this node.",
+      "mixedContent": "This page is served over HTTPS, so the browser blocks an HTTP node. Use an HTTPS address.",
+      "unreachable": "{{url}} did not answer as a CloudCLI server. Check the address, that the server is running and listening on the network (HOST=0.0.0.0)."
+    }
+  }
 }

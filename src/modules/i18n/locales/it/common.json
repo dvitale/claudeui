@@ -269,5 +269,27 @@
       "closeSidebar": "Chiudi barra laterale",
       "resizeSidebar": "Ridimensiona barra laterale"
     }
+  },
+  "remoteNodes": {
+    "tabsLabel": "Nodi",
+    "localTab": "Questo nodo",
+    "connectTitle": "Connetti a nodo remoto",
+    "dialogTitle": "Connetti a nodo remoto",
+    "dialogDescription": "Apri un altro server CloudCLI in una nuova scheda. Accedi con l'account di quel server.",
+    "addressLabel": "Indirizzo",
+    "nameLabel": "Nome (facoltativo)",
+    "namePlaceholder": "es. Server di build",
+    "connect": "Connetti",
+    "connectAnyway": "Aggiungi comunque",
+    "reload": "Ricarica nodo",
+    "openInNewWindow": "Apri in una nuova finestra",
+    "remove": "Rimuovi {{name}}",
+    "confirmRemove": "Rimuovere il nodo \"{{name}}\" e chiuderne la scheda?",
+    "errors": {
+      "invalidUrl": "Inserisci un indirizzo http(s), per esempio http://192.168.1.10:3001.",
+      "sameNode": "È l'indirizzo di questo nodo.",
+      "mixedContent": "Questa pagina è servita in HTTPS, quindi il browser blocca un nodo HTTP. Usa un indirizzo HTTPS.",
+      "unreachable": "{{url}} non risponde come server CloudCLI. Controlla l'indirizzo, che il server sia avviato e in ascolto sulla rete (HOST=0.0.0.0)."
+    }
   }
 }

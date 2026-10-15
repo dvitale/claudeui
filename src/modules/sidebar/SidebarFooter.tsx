@@ -1,7 +1,8 @@
-import { Settings, ArrowUpCircle, AlertTriangle } from 'lucide-react';
+import { Settings, ArrowUpCircle, AlertTriangle, Network } from 'lucide-react';
 import type { TFunction } from 'i18next';
 
-import { IS_PLATFORM } from '@/shared/utils';
+import { IS_PLATFORM, cn } from '@/shared/utils';
+import { useRemoteNodes } from '@/modules/remote-nodes';
 import type { ReleaseInfo } from '@/shared/types';
 
 const GITHUB_REPO_URL = 'https://github.com/siteboon/claudecodeui';
@@ -17,7 +18,7 @@ type SidebarFooterProps = {
   t: TFunction;
 };
 
-/** Rendered by SidebarContent at the bottom of the panel for settings and update status. */
+/** Rendered by SidebarContent at the bottom of the panel for settings, update status and remote nodes. */
 export default function SidebarFooter({
   updateAvailable,
   restartRequired,
@@ -28,6 +29,9 @@ export default function SidebarFooter({
   onShowSettings,
   t,
 }: SidebarFooterProps) {
+  // Null in platform mode and inside an embedded remote node, where the entry is hidden.
+  const remoteNodes = useRemoteNodes();
+
   return (
     <div className="flex-shrink-0" style={{ paddingBottom: 'env(safe-area-inset-bottom, 0)' }}>
       {/* Restart-required banner: the running server version differs from the
@@ -94,8 +98,21 @@ export default function SidebarFooter({
         </>
       )}
 
-      {/* Settings */}
+      {/* Remote nodes + Settings */}
       <div className="nav-divider" />
+
+      {/* Desktop connect to remote node */}
+      {remoteNodes && (
+        <div className="hidden px-2 pt-1.5 md:block">
+          <button
+            className="flex w-full items-center gap-2 rounded-lg px-2.5 py-1.5 text-muted-foreground transition-colors hover:bg-accent/60 hover:text-foreground"
+            onClick={remoteNodes.openConnectDialog}
+          >
+            <Network className="h-3.5 w-3.5" />
+            <span className="text-sm">{t('actions.connectRemoteNode')}</span>
+          </button>
+        </div>
+      )}
 
       {/* Desktop settings */}
       <div className="hidden px-2 py-1.5 md:block">
@@ -122,8 +139,23 @@ export default function SidebarFooter({
         </div>
       )}
 
+      {/* Mobile connect to remote node */}
+      {remoteNodes && (
+        <div className="px-3 pt-3 md:hidden">
+          <button
+            className="flex h-10 w-full items-center gap-3 rounded-xl bg-muted/40 px-3.5 transition-all hover:bg-muted/60 active:scale-[0.98]"
+            onClick={remoteNodes.openConnectDialog}
+          >
+            <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-background/80">
+              <Network className="h-4 w-4 text-muted-foreground" />
+            </div>
+            <span className="text-sm font-normal text-foreground">{t('actions.connectRemoteNode')}</span>
+          </button>
+        </div>
+      )}
+
       {/* Mobile settings */}
-      <div className="px-3 pb-3 pt-3 md:hidden">
+      <div className={cn('px-3 pb-3 md:hidden', remoteNodes ? 'pt-2' : 'pt-3')}>
         <button
           className="flex h-10 w-full items-center gap-3 rounded-xl bg-muted/40 px-3.5 transition-all hover:bg-muted/60 active:scale-[0.98]"
           onClick={onShowSettings}

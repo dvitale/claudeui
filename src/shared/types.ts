@@ -1844,3 +1844,20 @@ type TaskStatus =
 
 /** A TaskMaster task's priority; high, medium and low are the known values and the string fallback tolerates anything else TaskMaster emits. */
 type TaskPriority = 'high' | 'medium' | 'low' | string;
+
+//----------------- REMOTE NODES ------------
+
+/**
+ * Another CloudCLI server the user opened as a tab of this UI.
+ *
+ * `url` is the normalized base URL (origin plus an optional reverse-proxy path
+ * prefix, never a trailing slash). The tab embeds that server's own UI, so the
+ * remote frontend always matches the remote backend's version.
+ */
+export type RemoteNode = {
+  id: string;
+  name: string;
+  url: string;
+};
+
+// ---------------------------
