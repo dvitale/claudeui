@@ -73,6 +73,10 @@ and `.agents/skills/frontend-module-standards/SKILL.md`.
 - `npm run server` — Start only the backend from the production build
 - `npm test` / `npm run test:client` — Backend / frontend tests
 - `npm run typecheck` and `npm run lint` — Type checking and linting
+- `make start` / `make stop` / `make status` / `make logs` — Run the production build as a background service (`MODE=dev` for the dev stack, `make help` for all targets)
+- `make service-install` — Install the production build as a systemd service (`make service-unit` previews the unit; `service-start`/`stop`/`restart`/`status`/`logs`/`uninstall` manage it)
+- `make remote-install REMOTE=user@host` — Copy the working tree to another machine over SSH, build it there and install the service (`remote-deploy` to update; `remote-start`/`stop`/`restart`/`status`/`logs`/`uninstall`/`ssh` to manage it)
+- `make git-identity` — Set git `user.name`/`user.email` of the service user from `GIT_USER_NAME`/`GIT_USER_EMAIL` in `.env`; `remote-install` and `remote-deploy` copy them into each node's `.env` and apply them there (`remote-git-identity` does only that)
 
 ## Making Changes
 
