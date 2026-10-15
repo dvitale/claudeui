@@ -34,6 +34,17 @@ export const formatCompactAge = (
   return hours < 24 ? `${hours}hr` : `${Math.floor(hours / 24)}d`;
 };
 
+/** Full local date and time for the sidebar's project and session tooltips. Used by SidebarProjectItem and SidebarSessionItem. */
+export const formatFullDate = (date: Date): string =>
+  date.toLocaleString(undefined, { dateStyle: 'medium', timeStyle: 'short' });
+
+/** Parses an optional timestamp, returning null when it is missing or invalid. */
+const parseDate = (value: string | null | undefined): Date | null => {
+  if (!value) return null;
+  const date = new Date(value);
+  return Number.isNaN(date.getTime()) ? null : date;
+};
+
 const getCreatedTimestamp = (session: SessionWithProvider): string => {
   return String(session.createdAt || session.created_at || '');
 };
@@ -59,6 +70,21 @@ const getSessionName = (session: SessionWithProvider, t: TFunction): string => {
 
 const getSessionTime = (session: SessionWithProvider): string => {
   return getUpdatedTimestamp(session) || getCreatedTimestamp(session);
+};
+
+/**
+ * Tooltip for a session name: the full name (it is truncated in the row), then
+ * when the session was created and last active. Used by SidebarSessionItem.
+ */
+export const getSessionNameTooltip = (session: SessionWithProvider, t: TFunction): string => {
+  const createdAt = parseDate(getCreatedTimestamp(session));
+  const lastActivity = parseDate(getUpdatedTimestamp(session));
+
+  return [
+    getSessionName(session, t),
+    createdAt ? t('sessions.createdAt', { date: formatFullDate(createdAt) }) : null,
+    lastActivity ? t('sessions.lastActivity', { date: formatFullDate(lastActivity) }) : null,
+  ].filter(Boolean).join('\n');
 };
 
 export const createSessionViewModel = (
@@ -106,16 +132,19 @@ export const getAllSessions = (project: Project): SessionWithProvider[] => {
   return sessions;
 };
 
-const getProjectLastActivity = (project: Project): Date => {
-  const sessions = getAllSessions(project);
-  if (sessions.length === 0) {
-    return new Date(0);
-  }
+/**
+ * The backend's `lastActivity` covers every session, while the loaded sessions
+ * pick up live updates that arrived after the project list was fetched; the
+ * later of the two wins. Used for date sorting and by SidebarProjectItem.
+ */
+export const getProjectLastActivity = (project: Project): Date => {
+  const reported = new Date(project.lastActivity || 0);
+  const fromBackend = Number.isNaN(reported.getTime()) ? new Date(0) : reported;
 
-  return sessions.reduce((latest, session) => {
+  return getAllSessions(project).reduce((latest, session) => {
     const sessionDate = getSessionDate(session);
     return sessionDate > latest ? sessionDate : latest;
-  }, new Date(0));
+  }, fromBackend);
 };
 
 export const sortProjects = (

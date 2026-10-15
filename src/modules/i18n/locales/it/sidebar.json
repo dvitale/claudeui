@@ -17,7 +17,9 @@
     "projects": "progetti",
     "noMatchingProjects": "Nessun progetto corrispondente",
     "tryDifferentSearch": "Prova a modificare il termine di ricerca",
-    "runClaudeCli": "Esegui Claude CLI in una directory di progetto per iniziare"
+    "runClaudeCli": "Esegui Claude CLI in una directory di progetto per iniziare",
+    "firstSession": "Prima sessione: {{date}}",
+    "lastActivity": "Ultima attività: {{date}}"
   },
   "app": {
     "title": "CloudCLI",
@@ -25,6 +27,8 @@
   },
   "sessions": {
     "title": "Sessioni",
+    "createdAt": "Creata: {{date}}",
+    "lastActivity": "Ultima attività: {{date}}",
     "newSession": "Nuova sessione",
     "deleteSession": "Elimina sessione",
     "renameSession": "Rinomina sessione",

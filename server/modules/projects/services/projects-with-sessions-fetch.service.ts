@@ -13,6 +13,8 @@ type SessionSummary = {
   summary: string;
   messageCount: number;
   lastActivity: string;
+  /** Shown with lastActivity in the sidebar's session-name tooltip; null on rows that predate the column default. */
+  createdAt: string | null;
 };
 
 type SessionRepositoryRow = {
@@ -29,6 +31,10 @@ export type ProjectListItem = {
   displayName: string;
   fullPath: string;
   isStarred: boolean;
+  /** When the project's first session was created; null without sessions. */
+  createdAt: string | null;
+  /** Latest activity across all of the project's sessions, not just the returned page. */
+  lastActivity: string | null;
   sessions: SessionSummary[];
   sessionMeta: {
     hasMore: boolean;
@@ -124,6 +130,7 @@ function mapSessionRowToSummary(row: SessionRepositoryRow): SessionSummary {
     summary: row.custom_name || '',
     messageCount: 0,
     lastActivity: row.updated_at ?? row.created_at ?? new Date().toISOString(),
+    createdAt: row.created_at ?? null,
   };
 }
 
@@ -216,6 +223,7 @@ export async function getProjectsWithSessions(
       limit: options.sessionsLimit,
       offset: options.sessionsOffset,
     });
+    const dateRange = sessionsDb.getSessionDateRangeByProjectPath(projectPath);
 
     projects.push({
       projectId,
@@ -223,6 +231,8 @@ export async function getProjectsWithSessions(
       displayName,
       fullPath: projectPath,
       isStarred: Boolean(row.isStarred),
+      createdAt: dateRange.firstCreatedAt,
+      lastActivity: dateRange.lastActivityAt,
       sessions: sessionsPage.sessions,
       sessionMeta: {
         hasMore: sessionsPage.hasMore,
@@ -268,6 +278,7 @@ export async function getArchivedProjectsWithSessions(
         : await generateDisplayName(path.basename(row.project_path) || row.project_path, row.project_path);
 
     const sessionsPage = readProjectSessionsIncludingArchived(row.project_path);
+    const dateRange = sessionsDb.getSessionDateRangeByProjectPath(row.project_path, true);
 
     archivedProjects.push({
       projectId: row.project_id,
@@ -275,6 +286,8 @@ export async function getArchivedProjectsWithSessions(
       displayName,
       fullPath: row.project_path,
       isStarred: Boolean(row.isStarred),
+      createdAt: dateRange.firstCreatedAt,
+      lastActivity: dateRange.lastActivityAt,
       isArchived: true,
       sessions: sessionsPage.sessions,
       sessionMeta: {

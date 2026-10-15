@@ -6,7 +6,7 @@ import type { TFunction } from 'i18next';
 import { Badge, Dialog, DialogContent, DialogTitle, LLMProviderLogo, Tooltip, buttonVariants } from '@/shared/ui';
 import { cn } from '@/shared/utils';
 import type { LLMProvider, Project, ProjectSession, SessionWithProvider } from '@/shared/types';
-import { PROVIDER_LABELS, createSessionViewModel, formatCompactAge } from '@/modules/sidebar/utils/sidebarProjectFormatting';
+import { PROVIDER_LABELS, createSessionViewModel, formatCompactAge, getSessionNameTooltip } from '@/modules/sidebar/utils/sidebarProjectFormatting';
 import { useCompactSidebar } from '@/modules/sidebar/hooks/useCompactSidebar';
 import { useProviderSessionIdCopy } from '@/modules/sidebar/hooks/useProviderSessionIdCopy';
 import SessionOptions from '@/modules/sidebar/SessionOptions';
@@ -69,6 +69,7 @@ function SidebarSessionItem({
   const sessionView = createSessionViewModel(session, currentTime, t);
   const isSelected = selectedSession?.id === session.id;
   const compactSessionAge = formatCompactAge(sessionView.sessionTime, currentTime);
+  const sessionNameTooltip = getSessionNameTooltip(session, t);
   const [isMobileOptionsOpen, setIsMobileOptionsOpen] = useState(false);
   const showAttentionIndicator = needsAttention && !isSelected;
   // Background work takes the recent-activity dot's place: the session is
@@ -203,7 +204,7 @@ function SidebarSessionItem({
               <div className="flex items-center gap-2">
                 <div
                   className="min-w-0 flex-1 truncate text-sm font-normal text-foreground"
-                  title={sessionView.sessionName}
+                  title={sessionNameTooltip}
                 >
                   {sessionView.sessionName}
                 </div>
@@ -427,7 +428,7 @@ function SidebarSessionItem({
               <div className="flex items-center gap-2">
                 <div
                   className="min-w-0 flex-1 truncate text-sm font-normal text-foreground"
-                  title={sessionView.sessionName}
+                  title={sessionNameTooltip}
                 >
                   {sessionView.sessionName}
                 </div>

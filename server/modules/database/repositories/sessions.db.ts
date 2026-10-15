@@ -658,6 +658,34 @@ export const sessionsDb = {
     return Number(row?.count ?? 0);
   },
 
+  /**
+   * First session creation and latest activity across every session of a
+   * project, not just the page the sidebar loaded. Archived projects keep only
+   * archived sessions, so their range needs `includeArchived`.
+   */
+  getSessionDateRangeByProjectPath(
+    projectPath: string,
+    includeArchived = false,
+  ): { firstCreatedAt: string | null; lastActivityAt: string | null } {
+    const db = getConnection();
+    const normalizedProjectPath = normalizeProjectPath(projectPath);
+    // datetime() makes the ISO and SQLite CURRENT_TIMESTAMP spellings compare correctly.
+    const row = db
+      .prepare(
+        `SELECT MIN(datetime(created_at)) AS firstCreatedAt,
+                MAX(datetime(COALESCE(updated_at, created_at))) AS lastActivityAt
+         FROM sessions
+         WHERE project_path = ?
+           ${includeArchived ? '' : 'AND isArchived = 0'}`
+      )
+      .get(normalizedProjectPath) as { firstCreatedAt?: string | null; lastActivityAt?: string | null } | undefined;
+
+    return {
+      firstCreatedAt: normalizeTimestamp(row?.firstCreatedAt ?? undefined),
+      lastActivityAt: normalizeTimestamp(row?.lastActivityAt ?? undefined),
+    };
+  },
+
   deleteSessionsByProjectPath(projectPath: string): void {
     const db = getConnection();
     const normalizedProjectPath = normalizeProjectPath(projectPath);

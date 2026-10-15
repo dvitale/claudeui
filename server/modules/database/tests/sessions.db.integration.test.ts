@@ -166,3 +166,26 @@ test('recent sessions are globally ordered, paginated, and limited to visible co
     );
   });
 });
+
+test('getSessionDateRangeByProjectPath spans every session of the project, not just one page', async () => {
+  await withIsolatedDatabase(() => {
+    const projectPath = '/workspace/dated-project';
+    sessionsDb.createSession('s-old', 'claude', projectPath, 'Old', '2026-01-05T10:00:00.000Z', '2026-01-06T10:00:00.000Z');
+    sessionsDb.createSession('s-new', 'codex', projectPath, 'New', '2026-03-01T08:00:00.000Z', '2026-03-02T09:30:00.000Z');
+    sessionsDb.createSession('s-archived', 'claude', projectPath, 'Archived', '2025-12-01T00:00:00.000Z', '2026-04-01T00:00:00.000Z');
+    sessionsDb.updateSessionIsArchived('s-archived', true);
+
+    assert.deepEqual(sessionsDb.getSessionDateRangeByProjectPath(projectPath), {
+      firstCreatedAt: '2026-01-05T10:00:00.000Z',
+      lastActivityAt: '2026-03-02T09:30:00.000Z',
+    });
+    assert.equal(
+      sessionsDb.getSessionDateRangeByProjectPath(projectPath, true).firstCreatedAt,
+      '2025-12-01T00:00:00.000Z',
+    );
+    assert.deepEqual(sessionsDb.getSessionDateRangeByProjectPath('/workspace/empty'), {
+      firstCreatedAt: null,
+      lastActivityAt: null,
+    });
+  });
+});

@@ -125,6 +125,10 @@ export type Project = {
   fullPath: string;
   path?: string;
   isStarred?: boolean;
+  /** First session's creation time (ISO), computed by the backend over all sessions; absent on just-created projects. */
+  createdAt?: string | null;
+  /** Latest activity across all sessions (ISO), not only the loaded page; the sidebar shows it next to the session count. */
+  lastActivity?: string | null;
   sessions?: ProjectSession[];
   sessionMeta?: ProjectSessionMeta;
   taskmaster?: ProjectTaskmasterInfo;

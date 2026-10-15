@@ -5,7 +5,12 @@ import type { TFunction } from 'i18next';
 import { Button } from '@/shared/ui';
 import { cn } from '@/shared/utils';
 import type { LLMProvider, MCPServerStatus, Project, ProjectSession, SessionWithProvider, SidebarSessionSelection } from '@/shared/types';
-import { getTaskIndicatorStatus } from '@/modules/sidebar/utils/sidebarProjectFormatting';
+import {
+  formatCompactAge,
+  formatFullDate,
+  getProjectLastActivity,
+  getTaskIndicatorStatus,
+} from '@/modules/sidebar/utils/sidebarProjectFormatting';
 import TaskIndicator from '@/modules/sidebar/TaskIndicator';
 import SidebarProjectSessions from '@/modules/sidebar/SidebarProjectSessions';
 import { useCompactSidebar } from '@/modules/sidebar/hooks/useCompactSidebar';
@@ -62,6 +67,31 @@ const getSessionCountDisplay = (project: Project, sessions: SessionWithProvider[
   return String(total);
 };
 
+/**
+ * Compact age of the last activity ("3d") shown next to the session count, and
+ * a tooltip with the full first-session and last-activity dates. Both are empty
+ * for a project without sessions.
+ */
+const getProjectDateInfo = (project: Project, currentTime: Date, t: TFunction) => {
+  const lastActivity = getProjectLastActivity(project);
+  if (lastActivity.getTime() === 0) {
+    return { ageLabel: '', tooltip: '' };
+  }
+
+  const createdAt = project.createdAt ? new Date(project.createdAt) : null;
+  const lines = [
+    createdAt && !Number.isNaN(createdAt.getTime())
+      ? t('projects.firstSession', { date: formatFullDate(createdAt) })
+      : null,
+    t('projects.lastActivity', { date: formatFullDate(lastActivity) }),
+  ];
+
+  return {
+    ageLabel: formatCompactAge(lastActivity.toISOString(), currentTime),
+    tooltip: lines.filter(Boolean).join('\n'),
+  };
+};
+
 /** Rendered by SidebarProjectList for one project row, including its expand, rename, star and delete controls. */
 function SidebarProjectItem({
   project,
@@ -112,6 +142,7 @@ function SidebarProjectItem({
   const totalSessionCount = Number(project.sessionMeta?.total ?? sessions.length);
   const sessionCountDisplay = getSessionCountDisplay(project, sessions);
   const sessionCountLabel = `${sessionCountDisplay} session${totalSessionCount === 1 ? '' : 's'}`;
+  const projectDateInfo = getProjectDateInfo(project, currentTime, t);
   const taskStatus = getTaskIndicatorStatus(project, mcpServerStatus);
   const mobileRenameInputRef = useRef<HTMLInputElement>(null);
 
@@ -235,7 +266,10 @@ function SidebarProjectItem({
                           />
                         )}
                       </div>
-                      <p className="text-xs text-muted-foreground">{sessionCountLabel}</p>
+                      <p className="text-xs text-muted-foreground" title={projectDateInfo.tooltip || undefined}>
+                        {sessionCountLabel}
+                        {projectDateInfo.ageLabel && ` · ${projectDateInfo.ageLabel}`}
+                      </p>
                     </>
                   )}
                 </div>
@@ -369,8 +403,9 @@ function SidebarProjectItem({
                   <div className="truncate text-sm font-normal text-foreground" title={project.displayName}>
                     {project.displayName}
                   </div>
-                  <div className="text-xs text-muted-foreground">
+                  <div className="text-xs text-muted-foreground" title={projectDateInfo.tooltip || undefined}>
                     {sessionCountDisplay}
+                    {projectDateInfo.ageLabel && <span className="ml-1">{`· ${projectDateInfo.ageLabel}`}</span>}
                     {project.fullPath !== project.displayName && (
                       <span className="ml-1 opacity-60" title={project.fullPath}>
                         {' - '}
