@@ -75,8 +75,6 @@
     "save": "Save",
     "delete": "Delete",
     "rename": "Rename",
-    "joinCommunity": "Join Community",
-    "reportIssue": "Report Issue",
     "starOnGithub": "Star on GitHub"
   },
   "branding": {
